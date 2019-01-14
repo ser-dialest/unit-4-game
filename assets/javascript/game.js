@@ -391,6 +391,7 @@ function fight(timestamp) {
     else {
         u = 0;
         grid = 111;
+        player.x = 0;
     }
 }
 // requestAnimationFrame(fight);
@@ -446,6 +447,7 @@ function counter(timestamp) {
     else {
         u = 0;
         grid = 111;
+        enemy.x = 0;
     }
 }
 
