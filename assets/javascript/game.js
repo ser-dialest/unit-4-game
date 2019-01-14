@@ -2,13 +2,16 @@
 $("audio#prelude")[0].play();
 
 // Character constructor
-function Warrior(name, hp, atk, id, image) {
+function Warrior(name, hp, atk, id, image, sheet) {
     this.name = name;
     this.hp = hp;
     this.atk = atk;
     this.id = id;
+    this.sheet = "assets/images/" + sheet;
     this.image = "assets/images/" + image;
     this.lvl = 1;
+    this.x = 0;
+    this.sheetPos = 0;
 
     this.attack = function(enemy) {
         enemy.hp = enemy.hp - this.atk;
@@ -34,10 +37,10 @@ function Warrior(name, hp, atk, id, image) {
 }
 
 // Four characters
-var fighter = new Warrior("Fighter", 400, 5, "fighter", "Fighter3.png");
-var blackBelt = new Warrior("Black Belt", 325, 7, "blackBelt", "BlackBelt3.png");
-var redMage = new Warrior("Red Mage", 300, 9, "redMage", "RedMage3.png");
-var blackMage = new Warrior("Black Mage", 175, 20, "blackMage", "BlackMage3.png");
+var fighter = new Warrior("Fighter", 400, 5, "fighter", "Fighter3.png", "FighterSheet3.png");
+var blackBelt = new Warrior("Black Belt", 325, 7, "blackBelt", "BlackBelt3.png", "BlackBeltSheet3.png");
+var redMage = new Warrior("Red Mage", 300, 9, "redMage", "RedMage3.png", "RedMageSheet3.png");
+var blackMage = new Warrior("Black Mage", 175, 20, "blackMage", "BlackMage3.png", "BlackMageSheet3.png");
 
 // The variable that represents whom the user has chosen to be
 var player;
@@ -172,9 +175,13 @@ function select(id, choice) {
         writeStats("enemyStats", enemy);
         $("#battle-content").html(" \
         <div id='background'></div> \
-        <img src=" + enemy.image + " alt=" + enemy.name + " id='foe'/> \
-        <img src=" + player.image + " alt=" + player.name + " id='you'/> \
+        <div id='foe'></div> \
+        <div id='you'></div> \
         ");
+        $("#you").css("background-image", "url(" + player.sheet + ")");
+        $("#foe").css("background-image", "url(" + enemy.sheet + ")");
+
+
         boxCreate("attack");
         boxCreate("damage");
         boxCreate("fatality");
@@ -206,44 +213,44 @@ function attack() {
     $("#attack-content").bind('click', function(){
         $("#attack-content").unbind('click');
         $("#attack").css("display", "none");
-        console.log("Click");
+        requestAnimationFrame(fight);
         //attack effect
         setTimeout(function() {
             $("audio#hit")[0].play();
             requestAnimationFrame(shaking);
             enemy.hp = enemy.hp - player.atk*player.lvl;
             if (enemy.hp < 0) {enemy.hp = 0};
-            console.log("enemy hit");
             $("#attack-content").html("<p>You attack " + enemy.name + "!</p>");
             $("#attack").css("display", "block");
-        }, 500);
+        }, 750);
         setTimeout(function() {
             $("#damage-content").html("<p>" + player.atk*player.lvl + " DMG!</p>");
             $("#damage").css("display", "block");
             player.lvl++;
-            console.log("level up");
             writeStats("enemyStats", enemy);
             writeStats("yourStats", player);
-        }, 750);
+        }, 1000);
         setTimeout(function(){
             if (enemy.hp > 0) {
-                $("audio#hit")[0].play();
-                requestAnimationFrame(shaking);
+                requestAnimationFrame(counter);
+                setTimeout(function() {
+                    $("audio#hit")[0].play();
+                    requestAnimationFrame(shaking); 
+                }, 500);
                 $("#attack").css("display", "none");
                 $("#damage").css("display", "none");
                 //counter attack effect
                 player.hp = player.hp - enemy.atk*enemy.lvl;
-                console.log("player hit");
                 setTimeout(function(){          
                     $("#attack-content").html("<p>" + enemy.name + " attacks you!</p>");
                     $("#attack").css("display", "block");
-                }, 500);
+                }, 750);
                 setTimeout(function(){          
                     $("#damage-content").html("<p>" + enemy.atk*enemy.lvl + " DMG!</p>");
                     $("#damage").css("display", "block");
                     if (player.hp < 0) {player.hp = 0};
                     writeStats("yourStats", player);
-                }, 750);
+                }, 1000);
                 setTimeout(function(){
                     if (player.hp > 0) {         
                         attack()
@@ -251,23 +258,26 @@ function attack() {
                     else {
                         $("audio#battleBGM")[0].pause();
                         $("audio#defeat")[0].play();
+                        $("#you").css("backgroundPositionX", "-555px");
                         $("#fatality-content").html("<p>" + player.name + " is defeated</p>");    
                         $("#fatality").css("display", "block");
                     }
                 }, 2000);
             }
             else {
-            $("#fatality-content").html("<p>" + enemy.name + " is defeated.</p>");    
-            $("#fatality").css("display", "block");
-            setTimeout(function(){
-                $("audio#battleBGM")[0].pause();
-                $("audio#battleBGM")[0].currentTime = 0;
-                $("audio#fanfare")[0].play();
-                if (opponents[0]) {nextRound(opponents)}
-                else {victory(player)};
-            }, 2000);              
+                $("#foe").css("backgroundPositionX", "-555px");
+                $("#you").css("backgroundPositionX", "-666px");
+                $("#fatality-content").html("<p>" + enemy.name + " is defeated.</p>");    
+                $("#fatality").css("display", "block");
+                setTimeout(function(){
+                    $("audio#battleBGM")[0].pause();
+                    $("audio#battleBGM")[0].currentTime = 0;
+                    $("audio#fanfare")[0].play();
+                    if (opponents[0]) {nextRound(opponents)}
+                    else {victory(player)};
+                }, 2000);              
             }
-        }, 2000);        
+        }, 3000);        
     });
 }
 
@@ -315,7 +325,8 @@ function victory(player) {
     ");
 }
 
-var t=0;
+// Impact on attack
+var t = 0;
 var shake = [[0,0],[-6,-6],[-6,0],[0,-3],[-6,0],[0,-6],[0,0]];
 function shaking(timestamp) {
     if ((t/2) < shake.length){
@@ -328,3 +339,113 @@ function shaking(timestamp) {
     }
     else {t = 0};
 }
+
+var u = 0;
+var grid = 111;
+function fight(timestamp) {
+    if (u % 2 === 0) {
+        if (u < 18) {
+            player.x = player.x + 3;
+            if ((u % 4 === 0) && (u > 0)) {
+                player.sheetPos = player.sheetPos - grid;
+                grid = grid*-1;
+            }
+        }
+        else if (u === 18) {
+            player.sheetPos = -222;
+        }
+        else if (u === 20) {
+            player.sheetPos = -333;
+        }
+        else if (u === 24) {
+            player.sheetPos = -222;
+        }
+        else if (u === 28) {
+            player.sheetPos = -333;
+        }
+        else if (u === 32) {
+            player.sheetPos = -222;
+        }
+        else if (u === 34) {
+            player.sheetPos = -111;
+        }
+    }
+    else if (u === 35) {
+        player.sheetPos = 0;
+    }
+    else if ((u > 35) && (u % 2 === 1)) {
+        if (u <= 51) {
+            player.x = player.x - 3;
+            if (u % 4 === 1) {
+                player.sheetPos = player.sheetPos - grid;
+                grid = grid*-1;
+            }
+        }
+    }
+    if (u < 52) {
+        $("#you").css("backgroundPositionX", player.sheetPos + "px");
+        $("#you").css("right", (player.x + 9) + "px");
+        u++;
+        requestAnimationFrame(fight);
+    }
+    else {
+        u = 0;
+        grid = 111;
+    }
+}
+// requestAnimationFrame(fight);
+
+// This is not the right way to do this. There must be a way not to duplicate all this code, but it is 6 a.m. and I haven't slept yet.
+function counter(timestamp) {
+    if (u % 2 === 0) {
+        if (u < 18) {
+            enemy.x = enemy.x + 3;
+            if ((u % 4 === 0) && (u > 0)) {
+                enemy.sheetPos = enemy.sheetPos - grid;
+                grid = grid*-1;
+            }
+        }
+        else if (u === 18) {
+            enemy.sheetPos = -222;
+        }
+        else if (u === 20) {
+            enemy.sheetPos = -333;
+        }
+        else if (u === 24) {
+            enemy.sheetPos = -222;
+        }
+        else if (u === 28) {
+            enemy.sheetPos = -333;
+        }
+        else if (u === 32) {
+            enemy.sheetPos = -222;
+        }
+        else if (u === 34) {
+            enemy.sheetPos = -111;
+        }
+    }
+    else if (u === 35) {
+        enemy.sheetPos = 0;
+    }
+    else if ((u > 35) && (u % 2 === 1)) {
+        if (u <= 51) {
+            enemy.x = enemy.x - 3;
+            if (u % 4 === 1) {
+                enemy.sheetPos = enemy.sheetPos - grid;
+                grid = grid*-1;
+            }
+        }
+    }
+    if (u < 52) {
+        $("#foe").css("backgroundPositionX", enemy.sheetPos + "px");
+        $("#foe").css("left", (enemy.x + 9) + "px");
+        $("#foe").css("-webkit-transform", "scaleX(-1)");
+        u++;
+        requestAnimationFrame(counter);
+    }
+    else {
+        u = 0;
+        grid = 111;
+    }
+}
+
