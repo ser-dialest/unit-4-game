@@ -1,0 +1,120 @@
+@font-face {
+    font-family: FFI;
+    src: url("../fonts/final-fantasy-2-webfont.ttf");
+}
+
+body {
+    background: black;
+    height: 100%;
+}
+
+p {
+    z-index: 2;
+    text-align: center;
+    position: relative;
+    padding: 1em 0;
+    color: #FCFCFC;
+    font-family: FFI;
+    font-size: 24px;
+}
+
+#gamescreen {
+    position: relative;
+    margin: auto;
+    background: #24188C;
+    height: 672px;
+    /* min-width: 768px; */
+}
+
+.tlc {
+    height: 24px;
+    width: 24px;
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+    background-image: url("../images/TLC3.png")
+}
+
+.tb {
+    height: 24px;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+    top: 0px;
+    left: 0px;
+    background-image: url("../images/TB3.png");
+}
+
+.trc {
+    height: 24px;
+    width: 24px;
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    right: 0px;
+    background-image: url("../images/TRC3.png")
+}
+
+.lb {
+    height: 100%;
+    width: 24px;
+    background-image: url("../images/LB3.png");
+    position: absolute;
+    z-index: 0;
+    left: 0px;
+}
+
+.rb {
+    height: 100%;
+    width: 24px;
+    background-image: url("../images/RB3.png");
+    position: absolute;
+    z-index: 0;
+    right: 0px;
+}
+
+.blc {
+    height: 24px;
+    width: 24px;
+    background-image: url("../images/BLC3.png");
+    position: absolute;
+    z-index: 1;
+    bottom: 0px;
+    left: 0px;
+}
+
+.bb {
+    height: 24px;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+    bottom: 0px;
+    left: 0px;
+    background-image: url("../images/BB3.png");
+}
+
+
+.brc {
+    height: 24px;
+    width: 24px;
+    background-image: url("../images/BRC3.png");
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+#box {
+    height: 60%;
+    min-height: 250px;
+    width: 100%;
+    background: black;
+}
+
+/* #instructions {
+    height: 432px;
+} */
+
+.charSelect {
+    height: 100px;
+}

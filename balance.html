@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var hp1, hp2, hp3, hp4, str1, str2, str3, str4;
+        var char1 = [400, 5];
+        var char2 = [325, 7];
+        var char3 = [300, 9];
+        var char4 = [175, 20];
+        var lvl=1;
+        var alive = true;
+
+        function attack(you, enemy) {
+            //attack enemy
+            enemy[0] = enemy[0] - you[1]*lvl;
+            console.log("You attack! Enemy HP: " + enemy[0]);
+            lvl++;
+            // enemy attacks
+            if (enemy[0] > 0) {
+                you[0] = you[0] - enemy[1]*3;
+                console.log("He attacks! Your HP: " + you[0]);
+                //repeat for speed
+                if (you[0] > 0) {
+                    attack(you, enemy);
+                }
+                else {
+                    alive = false;
+                    console.log("You died. Game over.");
+                }
+            }
+            else {
+                console.log("You win! Power: " + you[1]*lvl);
+            }
+        }
+        alive = true;
+        var player = char4;
+// !!!!!
+        attack(player, char3);
+        if (alive) {
+            attack(player, char2);
+            if (alive) {
+                attack(player, char1);
+            }
+        }
+
+    </script>
+</body>
+</html>
