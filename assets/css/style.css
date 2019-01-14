@@ -165,3 +165,11 @@ p:last-child {
 #departure {
     width: 100%;
 }
+
+@media only screen and (max-width: 768px) {
+    #finale {
+        top: 0;
+        left: 0;
+    }
+    
+}

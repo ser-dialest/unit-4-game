@@ -1,3 +1,6 @@
+// Start the music
+$("audio#prelude")[0].play();
+
 // Character constructor
 function Warrior(name, hp, atk, id, image) {
     this.name = name;
@@ -175,6 +178,11 @@ function select(id, choice) {
         boxCreate("attack");
         boxCreate("damage");
         boxCreate("fatality");
+        $("audio#prelude")[0].pause();
+        $("audio#prelude")[0].currentTime = 0;
+        $("audio#fanfare")[0].pause();
+        $("audio#fanfare")[0].currentTime = 0;
+        $("audio#battleBGM")[0].play();
         attack();
     }
 }
@@ -201,6 +209,8 @@ function attack() {
         console.log("Click");
         //attack effect
         setTimeout(function() {
+            $("audio#hit")[0].play();
+            requestAnimationFrame(shaking);
             enemy.hp = enemy.hp - player.atk*player.lvl;
             if (enemy.hp < 0) {enemy.hp = 0};
             console.log("enemy hit");
@@ -217,6 +227,8 @@ function attack() {
         }, 750);
         setTimeout(function(){
             if (enemy.hp > 0) {
+                $("audio#hit")[0].play();
+                requestAnimationFrame(shaking);
                 $("#attack").css("display", "none");
                 $("#damage").css("display", "none");
                 //counter attack effect
@@ -237,6 +249,8 @@ function attack() {
                         attack()
                     }
                     else {
+                        $("audio#battleBGM")[0].pause();
+                        $("audio#defeat")[0].play();
                         $("#fatality-content").html("<p>" + player.name + " is defeated</p>");    
                         $("#fatality").css("display", "block");
                     }
@@ -246,6 +260,9 @@ function attack() {
             $("#fatality-content").html("<p>" + enemy.name + " is defeated.</p>");    
             $("#fatality").css("display", "block");
             setTimeout(function(){
+                $("audio#battleBGM")[0].pause();
+                $("audio#battleBGM")[0].currentTime = 0;
+                $("audio#fanfare")[0].play();
                 if (opponents[0]) {nextRound(opponents)}
                 else {victory(player)};
             }, 2000);              
@@ -292,8 +309,22 @@ function victory(player) {
     $("#finale-content").html(" \
     <p>Well done, " + player.name + "!</p> \
     <br /> \
-    <p>You have proven yourself to be the strongest of the Light Warriors</p> \
+    <p>You have proven yourself to be the strongest of the Light Warriors.</p> \
     <br /> \
     <p>Thank you for playing!</p> \
     ");
+}
+
+var t=0;
+var shake = [[0,0],[-6,-6],[-6,0],[0,-3],[-6,0],[0,-6],[0,0]];
+function shaking(timestamp) {
+    if ((t/2) < shake.length){
+        if (t % 2 === 0) {
+            $("#gamescreen").css("top", shake[t/2][0]);
+            $("#gamescreen").css("left", shake[t/2][1]);
+        };
+        t++;
+        requestAnimationFrame(shaking);
+    }
+    else {t = 0};
 }
