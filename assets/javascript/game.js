@@ -102,10 +102,9 @@ $(document).bind('click', function(){
     
     boxCreate("instructions");
     $("#instructions-content").html(" \
-    <p>This is where instructions go.</p> \
-    <p>You'll pick someone.</p> \
-    <p>Pick someone below.</p> \
-    ")
+    <p>These are the valiant four who have answered the challenge.</p> \
+    <p>Which one are you?</p> \
+    ");
     boxCreate("fighter");
     charSelect(fighter);
     boxCreate("blackBelt");
@@ -156,6 +155,10 @@ function select(id, choice) {
                     <div class='col-md-12' id='damage'> \
                     </div> \
                 </div> \
+                <div class='row'> \
+                    <div class='col-md-12' id='fatality'> \
+                    </div> \
+                </div> \
             </div> \
         </div> \
         ");
@@ -164,10 +167,15 @@ function select(id, choice) {
         writeStats("yourStats", player);
         boxCreate("enemyStats");
         writeStats("enemyStats", enemy);
-        $("#battle-content").html("<div id='background'></div>");
+        $("#battle-content").html(" \
+        <div id='background'></div> \
+        <img src=" + enemy.image + " alt=" + enemy.name + " id='foe'/> \
+        <img src=" + player.image + " alt=" + player.name + " id='you'/> \
+        ");
         boxCreate("attack");
+        boxCreate("damage");
+        boxCreate("fatality");
         attack();
-
     }
 }
 
@@ -180,8 +188,112 @@ function writeStats(who, char) {
 }
 
 function attack() {
-    $("#attack-content").html("<p>Attack</p>");
-    $("#attack-content").click(function(){
-        
+    $("#damage").css("display", "none");
+    $("#attack").css("display", "none");
+    $("#fatality").css("display", "none");
+    setTimeout(function() {
+        $("#attack-content").html("<p>Attack</p>");
+        $("#attack").css("display", "block");
+    }, 250);
+    $("#attack-content").bind('click', function(){
+        $("#attack-content").unbind('click');
+        $("#attack").css("display", "none");
+        console.log("Click");
+        //attack effect
+        setTimeout(function() {
+            enemy.hp = enemy.hp - player.atk*player.lvl;
+            if (enemy.hp < 0) {enemy.hp = 0};
+            console.log("enemy hit");
+            $("#attack-content").html("<p>You attack " + enemy.name + "!</p>");
+            $("#attack").css("display", "block");
+        }, 500);
+        setTimeout(function() {
+            $("#damage-content").html("<p>" + player.atk*player.lvl + " DMG!</p>");
+            $("#damage").css("display", "block");
+            player.lvl++;
+            console.log("level up");
+            writeStats("enemyStats", enemy);
+            writeStats("yourStats", player);
+        }, 750);
+        setTimeout(function(){
+            if (enemy.hp > 0) {
+                $("#attack").css("display", "none");
+                $("#damage").css("display", "none");
+                //counter attack effect
+                player.hp = player.hp - enemy.atk*enemy.lvl;
+                console.log("player hit");
+                setTimeout(function(){          
+                    $("#attack-content").html("<p>" + enemy.name + " attacks you!</p>");
+                    $("#attack").css("display", "block");
+                }, 500);
+                setTimeout(function(){          
+                    $("#damage-content").html("<p>" + enemy.atk*enemy.lvl + " DMG!</p>");
+                    $("#damage").css("display", "block");
+                    if (player.hp < 0) {player.hp = 0};
+                    writeStats("yourStats", player);
+                }, 750);
+                setTimeout(function(){
+                    if (player.hp > 0) {         
+                        attack()
+                    }
+                    else {
+                        $("#fatality-content").html("<p>" + player.name + " is defeated</p>");    
+                        $("#fatality").css("display", "block");
+                    }
+                }, 2000);
+            }
+            else {
+            $("#fatality-content").html("<p>" + enemy.name + " is defeated.</p>");    
+            $("#fatality").css("display", "block");
+            setTimeout(function(){
+                if (opponents[0]) {nextRound(opponents)}
+                else {victory(player)};
+            }, 2000);              
+            }
+        }, 2000);        
     });
+}
+
+function nextRound(list) {
+    $("#gamescreen").css("background", "black");
+    $("#gamescreen").html(" \
+    <div class='row'> \
+        <div class='col-md-12' id='instructions'> \
+        </div> \
+    </div> \
+    <div class='row' id='characters'> \
+    </div> \
+    ");
+    boxCreate("instructions");
+    $("#instructions-content").html(" \
+    <p>Congratulations!</p> \
+    <p>The next round begins.</p> \
+    <p>Choose your opponent.</p> \
+    ")
+    for (i=0; i < list.length; i++) {
+        $("#characters").append(" \
+        <div class='col-md-6 charSelect' id="+ list[i].id + "> \
+        </div> \
+        ");
+        boxCreate(list[i].id);
+        charSelect(list[i]);
+    }
+}
+
+function victory(player) {
+    $("#gamescreen").html(" \
+    <div class='row'> \
+        <img src='assets/images/CutScene3.png' alt='Final Fantasy Departure' id='departure' /> \
+        <div class='col-md-8' id='finale'> \
+        </div> \
+    </div> \
+    ");
+    boxCreate("finale");
+    $("#finale-content").html(" \
+    <p>Well done, " + player.name + "!</p> \
+    <br /> \
+    <p>You have proven yourself to be the strongest of the Light Warriors</p> \
+    <br /> \
+    <p>Thank you for playing!</p> \
+    ");
 }

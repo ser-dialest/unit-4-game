@@ -126,7 +126,7 @@ p:last-child {
  }
 
  #battle-content {
-     height: 420px; 
+     height: 300px; 
  }
  
  #background {
@@ -137,4 +137,31 @@ p:last-child {
     left: 0px;
     background-image: url("../images/Forrest3.png");
     z-index: 0;
+}
+
+#foe {
+    position: absolute;
+    top: 123px;
+    left: 24px;
+    -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+
+#you {
+    position: absolute;
+    top: 123px;
+    right: 24px;
+}
+
+#finale {
+    position: absolute !important;
+    top: 11%;
+    left: 12%;
+    display: inline;
+    background: black;
+    z-index: 1;
+}
+
+#departure {
+    width: 100%;
 }
