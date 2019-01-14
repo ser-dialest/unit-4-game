@@ -12,10 +12,19 @@ p {
     z-index: 2;
     text-align: center;
     position: relative;
-    padding: 1em 0;
+    /* padding: 1em 0; */
     color: #FCFCFC;
     font-family: FFI;
     font-size: 24px;
+    margin: 0px;
+}
+
+p:first-child {
+    padding-top: 1em;
+}
+
+p:last-child {
+    padding-bottom: 1em;
 }
 
 #gamescreen {
@@ -30,7 +39,7 @@ p {
     height: 24px;
     width: 24px;
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top: 0px;
     left: 0px;
     background-image: url("../images/TLC3.png")
@@ -40,7 +49,7 @@ p {
     height: 24px;
     width: 100%;
     position: absolute;
-    z-index: 0;
+    z-index: 1;
     top: 0px;
     left: 0px;
     background-image: url("../images/TB3.png");
@@ -50,7 +59,7 @@ p {
     height: 24px;
     width: 24px;
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top: 0px;
     right: 0px;
     background-image: url("../images/TRC3.png")
@@ -61,7 +70,7 @@ p {
     width: 24px;
     background-image: url("../images/LB3.png");
     position: absolute;
-    z-index: 0;
+    z-index: 1;
     left: 0px;
 }
 
@@ -70,7 +79,7 @@ p {
     width: 24px;
     background-image: url("../images/RB3.png");
     position: absolute;
-    z-index: 0;
+    z-index: 1;
     right: 0px;
 }
 
@@ -79,7 +88,7 @@ p {
     width: 24px;
     background-image: url("../images/BLC3.png");
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     bottom: 0px;
     left: 0px;
 }
@@ -88,7 +97,7 @@ p {
     height: 24px;
     width: 100%;
     position: absolute;
-    z-index: 0;
+    z-index: 1;
     bottom: 0px;
     left: 0px;
     background-image: url("../images/BB3.png");
@@ -100,6 +109,7 @@ p {
     width: 24px;
     background-image: url("../images/BRC3.png");
     position: absolute;
+    z-index: 2;
     bottom: 0px;
     right: 0px;
 }
@@ -110,11 +120,21 @@ p {
     width: 100%;
     background: black;
 }
+ .portrait {
+     margin: auto;
+     display: block;
+ }
 
-/* #instructions {
-    height: 432px;
-} */
-
-.charSelect {
-    height: 100px;
+ #battle-content {
+     height: 420px; 
+ }
+ 
+ #background {
+    height: 96px;
+    width: 100%;
+    position: absolute;
+    top: 24px;
+    left: 0px;
+    background-image: url("../images/Forrest3.png");
+    z-index: 0;
 }

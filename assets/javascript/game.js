@@ -1,10 +1,12 @@
-// Four characters
-
-function Warrior(name, hp, atk, cntr) {
+// Character constructor
+function Warrior(name, hp, atk, id, image) {
     this.name = name;
     this.hp = hp;
     this.atk = atk;
-    this.cntr = cntr;
+    this.id = id;
+    this.image = "assets/images/" + image;
+    this.lvl = 1;
+
     this.attack = function(enemy) {
         enemy.hp = enemy.hp - this.atk;
         this.swing()
@@ -28,11 +30,20 @@ function Warrior(name, hp, atk, cntr) {
     };
 }
 
-// var player = new Warrior("bob", 21, 6, 5);
-// var enemy = new Warrior("sue", 1, 1, 1);
+// Four characters
+var fighter = new Warrior("Fighter", 400, 5, "fighter", "Fighter3.png");
+var blackBelt = new Warrior("Black Belt", 325, 7, "blackBelt", "BlackBelt3.png");
+var redMage = new Warrior("Red Mage", 300, 9, "redMage", "RedMage3.png");
+var blackMage = new Warrior("Black Mage", 175, 20, "blackMage", "BlackMage3.png");
 
-// enemy.counter(player);
+// The variable that represents whom the user has chosen to be
+var player;
+// The variable that represents the user's currnt enemy
+var enemy;
+// The array that represents warriors that are have not yet been engaged
+var opponents = [fighter, blackBelt, redMage, blackMage];
 
+// function to create view areas in the style
 function boxCreate(container) {
     $("#" + container).css("position", "relative");
     $("#" + container).html(" \
@@ -49,44 +60,40 @@ function boxCreate(container) {
     ");
 }
 
+// Function to fill box with character select information
+function charSelect(char) {
+    $("#" + char.id + "-content").html(" \
+    <p>" + char.name + "</p> \
+    <img src=" + char.image + " alt=" + char.name + " class='portrait' /> \
+    <p>HP: " + char.hp + "</p> \
+    <p>ATK: " + char.atk + "</p> \
+    ");
+    $("#" + char.id + "-content").click(function(){select(char.id, char);});
+}
 
-// boxtop("box");
-// $("#box-content").html("<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam laboriosam repudiandae aut doloremque alias molestiae, odit sint pariatur atque porro autem dolorum officia, dignissimos delectus unde reiciendis aliquam facilis quam!</p>");
-
-// setTimeout(function(){ $("#box").remove() }, 3000);
-
-// $("section").append("<div id='container2' class='container'></div>");
-// boxtop("container2");
-
-// create opening page
-// create char select screen
-// BALANCE CHARACTERS
-// Create enemy select screen
 // create battle scene
 // define attack function
 
 // opening > char select > enemy select > battle > attack(repeat) > Loss or enemy select > battle
 
-
-
-$(document).bind('keyup', function(){
-    console.log("KEY");
-    $("#gamescreen").append("<p> HELLO </p>");
-    $(document).unbind('keyup');
+// Get out of opening screen
+$(document).bind('click', function(){
+    $(document).unbind('click');
+    // Create character select sceen;
     $("#gamescreen").css("background", "black");
     $("#gamescreen").html(" \
-    <div class='row' \
+    <div class='row'> \
         <div class='col-md-12' id='instructions'> \
         </div> \
     </div> \
     <div class='row'> \
         <div class='col-md-6 charSelect' id='fighter'> \
         </div> \
-        <div class='col-md-6 charSelect' id='thief'> \
+        <div class='col-md-6 charSelect' id='blackBelt'> \
         </div> \
     </div> \
     <div class='row'> \
-        <div class='col-md-6 charSelect' id='blackBelt'> \
+        <div class='col-md-6 charSelect' id='redMage'> \
         </div> \
         <div class='col-md-6 charSelect' id='blackMage'> \
         </div> \
@@ -100,11 +107,81 @@ $(document).bind('keyup', function(){
     <p>Pick someone below.</p> \
     ")
     boxCreate("fighter");
-    $("#fighter-content").html("<p>Fighter</p>");
-    boxCreate("thief");
-    $("#thief-content").html("<p>Thief</p>");
+    charSelect(fighter);
     boxCreate("blackBelt");
-    $("#blackBelt-content").html("<p>Black Belt</p>");
+    charSelect(blackBelt);
+    boxCreate("redMage");
+    charSelect(redMage);
     boxCreate("blackMage");
-    $("#blackMage-content").html("<p>Black Mage</p>");
+    charSelect(blackMage);
 });
+
+// Character selection function
+function select(id, choice) {
+    $("#" + id).remove();
+    if (!player) {
+        player = choice;
+        opponents.splice(opponents.indexOf(player), 1);
+        $("#instructions-content").html(" \
+    <p>You have chosen " + player.name + ".</p> \
+    <p>Choose your first opponent.</p> \
+    ")
+    }
+    else {
+        enemy = choice;
+        opponents.splice(opponents.indexOf(enemy), 1);
+        enemy.lvl = 3;
+        $("#gamescreen").html(" \
+        <div class='row'> \
+            <div class='col-md-12' id='battle'> \
+            </div> \
+        </div> \
+        <div class='row'> \
+            <div class='col-md-4'> \
+                <div class='row'> \
+                    <div class='col-md-12' id='yourStats'> \
+                    </div> \
+                </div> \
+                <div class='row'> \
+                    <div class='col-md-12' id='enemyStats'> \
+                    </div> \
+                </div> \
+            </div>\
+            <div class='col-md-8'> \
+                <div class='row'> \
+                    <div class='col-md-12' id='attack'> \
+                    </div> \
+                </div> \
+                <div class='row'> \
+                    <div class='col-md-12' id='damage'> \
+                    </div> \
+                </div> \
+            </div> \
+        </div> \
+        ");
+        boxCreate("battle");
+        boxCreate("yourStats");
+        writeStats("yourStats", player);
+        boxCreate("enemyStats");
+        writeStats("enemyStats", enemy);
+        $("#battle-content").html("<div id='background'></div>");
+        boxCreate("attack");
+        attack();
+
+    }
+}
+
+function writeStats(who, char) {
+    $("#" + who + "-content").html(" \
+    <p>" + char.name + "</p> \
+    <p>Lvl: " + char.lvl + "</p> \
+    <p>HP: " + char.hp + "</p> \
+    ");
+}
+
+function attack() {
+    $("#attack-content").html("<p>Attack</p>");
+    $("#attack-content").click(function(){
+        
+    });
+}
